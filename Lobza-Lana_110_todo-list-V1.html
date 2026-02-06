@@ -30,6 +30,8 @@ Izmantotais Compiler: Visual Studio Code
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", loadData);
+
 function addTask() {
   const input = document.getElementById("task-input");
   const taskText = input.value.trim();
@@ -48,14 +50,41 @@ function addTask() {
 
   text.onclick = function () {
     text.classList.toggle("text-decoration-line-through");
+    saveData();
   };
 
   li.querySelector("button").onclick = function () {
     li.remove();
+    saveData();
   };
 
   ul.appendChild(li);
   input.value = "";
+  saveData();
+}
+
+function saveData() {
+  const tasks = [];
+  document.querySelectorAll("#task-list li").forEach(li => {
+    const text = li.querySelector(".task-text");
+    tasks.push({
+      text: text.textContent,
+      completed: text.classList.contains("text-decoration-line-through")
+    });
+  });
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadData() {
+  const data = JSON.parse(localStorage.getItem("tasks")) || [];
+  data.forEach(task => {
+    document.getElementById("task-input").value = task.text;
+    addTask();
+    const lastTask = document.querySelector("#task-list li:last-child .task-text");
+    if (task.completed) {
+      lastTask.classList.add("text-decoration-line-through");
+    }
+  });
 }
 </script>
 
@@ -65,5 +94,4 @@ function addTask() {
 <!--
 Kas ir localStorage pārlūkprogrammā?
 localStorage ir pārlūkprogrammas atmiņa, kurā var saglabāt datus ilgtermiņā – tie nepazūd pēc lapas pārlādes (F5) vai pārlūka aizvēršanas.
-
 -->
