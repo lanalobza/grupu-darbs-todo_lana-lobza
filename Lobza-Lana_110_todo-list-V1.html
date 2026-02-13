@@ -1,7 +1,7 @@
 <!--
 Veidoja: Lana Lobza
 Grupa: 110
-Praktiskais darbs V1
+Praktiskais darbs V3
 Izmantotais Compiler: Visual Studio Code
 -->
 <!DOCTYPE html>
@@ -15,142 +15,124 @@ Izmantotais Compiler: Visual Studio Code
 
 <body class="bg-light">
 <div class="container mt-5">
-  <div class="card mx-auto" style="max-width: 500px;">
-    <div class="card-body">
-      <h3 class="card-title text-center mb-4">Todo List V2</h3>
-
-      <div class="input-group mb-3">
-        <select id="priority" class="form-select">
-          <option value="low">Zema</option>
-          <option value="medium">Vidēja</option>
-          <option value="high">Svarīgi</option>
-        </select>
-
-        <input type="text" id="task-input" class="form-control" placeholder="Ieraksti darbu...">
-        <button class="btn btn-primary" onclick="addTask()">Pievienot</button>
-      </div>
-
-      <ul id="task-list" class="list-group"></ul>
-    </div>
-  </div>
+<div class="card mx-auto" style="max-width: 500px;">
+<div class="card-body">
+<h3 class="card-title text-center mb-4">Todo List V2</h3>
+<div class="input-group mb-3">
+<select id="priority" class="form-select">
+<option value="low">Zema</option>
+<option value="medium">Vidēja</option>
+<option value="high">Svarīgi</option>
+</select>
+<input type="text" id="task-input" class="form-control" placeholder="Ieraksti darbu...">
+<button class="btn btn-primary" onclick="addTask()">Pievienot</button>
+</div>
+<input type="text" id="search-input" class="form-control mb-3" placeholder="Meklēt uzdevumu...">
+<ul id="task-list" class="list-group"></ul>
+</div>
+</div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", loadData);
-
 const priorities = {
-  high: { class: "bg-danger", text: "SVARĪGI" },
-  medium: { class: "bg-warning text-dark", text: "Vidēja" },
-  low: { class: "bg-secondary", text: "Zema" }
+high: { class: "bg-danger", text: "SVARĪGI" },
+medium: { class: "bg-warning text-dark", text: "Vidēja" },
+low: { class: "bg-secondary", text: "Zema" }
 };
 
 function addTask() {
-  const input = document.getElementById("task-input");
-  const priority = document.getElementById("priority").value;
-  const taskText = input.value.trim();
-
-  if (taskText === "") return;
-
-  const ul = document.getElementById("task-list");
-  const li = document.createElement("li");
-  li.className = "list-group-item d-flex justify-content-between align-items-center";
-
-  const badgeClass = priorities[priority].class;
-  const badgeText = priorities[priority].text;
-
-  li.innerHTML = `
-    <div>
-      <span class="badge ${badgeClass} me-2">${badgeText}</span>
-      <span class="task-text">${taskText}</span>
-    </div>
-    <button class="btn btn-outline-danger btn-sm">Dzēst</button>
-  `;
-
-  const text = li.querySelector(".task-text");
-
-  text.onclick = function () {
-    text.classList.toggle("text-decoration-line-through");
-    saveData();
-  };
-
-  li.querySelector("button").onclick = function () {
-    li.remove();
-    saveData();
-  };
-
-  ul.appendChild(li);
-  input.value = "";
-  saveData();
+const input = document.getElementById("task-input");
+const priority = document.getElementById("priority").value;
+const taskText = input.value.trim();
+if (taskText === "") return;
+const ul = document.getElementById("task-list");
+const li = document.createElement("li");
+li.className = "list-group-item d-flex justify-content-between align-items-center";
+const badgeClass = priorities[priority].class;
+const badgeText = priorities[priority].text;
+li.innerHTML = `
+<div>
+<span class="badge ${badgeClass} me-2">${badgeText}</span>
+<span class="task-text">${taskText}</span>
+</div>
+<button class="btn btn-outline-danger btn-sm">Dzēst</button>
+`;
+const text = li.querySelector(".task-text");
+text.onclick = function () {
+text.classList.toggle("text-decoration-line-through");
+saveData();
+};
+li.querySelector("button").onclick = function () {
+li.remove();
+saveData();
+};
+ul.appendChild(li);
+input.value = "";
+saveData();
 }
 
 function saveData() {
-  const tasks = [];
-
-  document.querySelectorAll("#task-list li").forEach(li => {
-    const text = li.querySelector(".task-text");
-    const badge = li.querySelector(".badge");
-
-    let priority = "low";
-
-    if (badge.classList.contains("bg-danger")) priority = "high";
-    if (badge.classList.contains("bg-warning")) priority = "medium";
-
-    tasks.push({
-      text: text.textContent,
-      completed: text.classList.contains("text-decoration-line-through"),
-      priority: priority
-    });
-  });
-
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+const tasks = [];
+document.querySelectorAll("#task-list li").forEach(li => {
+const text = li.querySelector(".task-text");
+const badge = li.querySelector(".badge");
+let priority = "low";
+if (badge.classList.contains("bg-danger")) priority = "high";
+if (badge.classList.contains("bg-warning")) priority = "medium";
+tasks.push({
+text: text.textContent,
+completed: text.classList.contains("text-decoration-line-through"),
+priority: priority
+});
+});
+localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 function loadData() {
-  const data = JSON.parse(localStorage.getItem("tasks")) || [];
-
-  data.forEach(task => {
-    const ul = document.getElementById("task-list");
-    const li = document.createElement("li");
-    li.className = "list-group-item d-flex justify-content-between align-items-center";
-
-    const badgeClass = priorities[task.priority].class;
-    const badgeText = priorities[task.priority].text;
-
-    li.innerHTML = `
-      <div>
-        <span class="badge ${badgeClass} me-2">${badgeText}</span>
-        <span class="task-text">${task.text}</span>
-      </div>
-      <button class="btn btn-outline-danger btn-sm">Dzēst</button>
-    `;
-
-    const text = li.querySelector(".task-text");
-
-    if (task.completed) {
-      text.classList.add("text-decoration-line-through");
-    }
-
-    text.onclick = function () {
-      text.classList.toggle("text-decoration-line-through");
-      saveData();
-    };
-
-    li.querySelector("button").onclick = function () {
-      li.remove();
-      saveData();
-    };
-
-    ul.appendChild(li);
-  });
+const data = JSON.parse(localStorage.getItem("tasks")) || [];
+data.forEach(task => {
+const ul = document.getElementById("task-list");
+const li = document.createElement("li");
+li.className = "list-group-item d-flex justify-content-between align-items-center";
+const badgeClass = priorities[task.priority].class;
+const badgeText = priorities[task.priority].text;
+li.innerHTML = `
+<div>
+<span class="badge ${badgeClass} me-2">${badgeText}</span>
+<span class="task-text">${task.text}</span>
+</div>
+<button class="btn btn-outline-danger btn-sm">Dzēst</button>
+`;
+const text = li.querySelector(".task-text");
+if (task.completed) {
+text.classList.add("text-decoration-line-through");
 }
-</script>
+text.onclick = function () {
+text.classList.toggle("text-decoration-line-through");
+saveData();
+};
+li.querySelector("button").onclick = function () {
+li.remove();
+saveData();
+};
+ul.appendChild(li);
+});
+}
 
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+
+    searchInput.addEventListener("input", function () {
+        const searchValue = this.value.toLowerCase();
+        const tasks = document.querySelectorAll("#task-list li");
+
+        tasks.forEach(task => {
+            const text = task.querySelector(".task-text").textContent.toLowerCase();
+            task.style.display = text.includes(searchValue) ? "" : "none";
+        });
+    });
+});
+</script>
 </body>
 </html>
-
-<!--
-Kas ir localStorage pārlūkprogrammā?
-localStorage ir pārlūkprogrammas atmiņa, kurā var saglabāt datus ilgtermiņā – tie nepazūd pēc lapas pārlādes (F5) vai pārlūka aizvēršanas.
--->
-
-
